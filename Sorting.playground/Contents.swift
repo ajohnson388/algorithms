@@ -11,9 +11,8 @@ import Foundation
     2. Create a subset that excludes the first element
     3. Compare each element in the subset with the first element from the original array
     4. Swap the first element of the original array
- 
-    2. Swap it with the first element the first element
-    3. Repeat on subset of the array
+    5. Recursively sort with the modified array
+    6. End recursion when either the end index or the array bounds has been reached
 */
 
 public enum Order {
@@ -28,7 +27,7 @@ public struct Selection {
     /**
         Sorts an array of comparable elements
     */
-    public static func sort<T>(array arr: [T], startingAt startIndex: Int = 0, endingAt endIndex: Int = 0, order: Order) -> [T] where T: Comparable {
+    public static func sort<T>(array arr: [T], startingAt startIndex: Int = 0, endingAt endIndex: Int = arr.count - 1, order: Order) -> [T] where T: Comparable {
     
         // End recursion as needed
         let atEndIndex = startIndex == endIndex
