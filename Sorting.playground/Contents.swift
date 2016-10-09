@@ -2,8 +2,6 @@
 
 import Foundation
 
-
-
 /**
     Selection sort
     
@@ -19,20 +17,31 @@ public enum Order {
     case ascending, descending
 }
 
+
 /**
-    A static struct that exposes a single method for peforming a selection sort.
+    The fields track the number of necessary swaps and compares. According to Algorithms, 
+    4th ed. by Sedgewick, there should be ~(N^2)/2 compares and N swaps for an array of 
+    size N.
 */
-public struct Selection {
+func selectionSort<T>(array arr: [T], startingAt startIndex: Int = 0, endingAt endIndex: Int = arr.count - 1, order: Order) -> [T] where T: Comparable {
     
-    /**
-        Sorts an array of comparable elements
-    */
-    public static func sort<T>(array arr: [T], startingAt startIndex: Int = 0, endingAt endIndex: Int = arr.count - 1, order: Order) -> [T] where T: Comparable {
+    var numSwaps = 0
+    var numCompares = 0
     
+    // The primary recursive function for sorting
+    func sort<T>(array arr: [T], startingAt startIndex: Int = 0, endingAt endIndex: Int = arr.count - 1, order: Order) -> [T] where T: Comparable {
+        
         // End recursion as needed
         let atEndIndex = startIndex == endIndex
         let atEndOfArray = arr.count - 1 == startIndex
         if atEndIndex || atEndOfArray {
+            
+            // Report on the number of compares and swaps
+            reportStats()
+        
+            // Clean up the fields
+            numSwaps = 0
+            numCompares = 0
             return arr
         }
     
@@ -56,16 +65,22 @@ public struct Selection {
         return sort(array: modifiedArr, startingAt: nextIndex, endingAt: endIndex, order: order)
     }
     
-    private static func shouldSwap<T>(value: T, withValue testVal: T, order: Order) -> Bool where T: Comparable {
-    
+    // A helper function that peforms a compare
+    func shouldSwap<T>(value: T, withValue testVal: T, order: Order) -> Bool where T: Comparable {
+        
+        numCompares += 1
+        
         // Compare via order
         switch order {
         case .ascending: return value >= testVal
         case .descending: return value <= testVal
         }
     }
+
+    // A helper function that peforms a swap
+    func swap<T>(arr: [T], first: Int, second: Int) -> [T] where T: Comparable {
     
-    private static func swap<T>(arr: [T], first: Int, second: Int) -> [T] where T: Comparable {
+        numSwaps += 1
     
         // Create a mutable copy to return
         var ret = arr
@@ -80,11 +95,29 @@ public struct Selection {
         
         return ret
     }
+    
+    func reportStats() {
+        
+        let expCompares = pow(Double(numCompares), 2)/2
+        let errCompares = 100 * (expCompares - Double(numCompares)) / Double(numCompares)
+        let errSwaps = 100 * Double(arr.count - numSwaps) / Double(numSwaps)
+    
+        print("Expected Compares = ~\(expCompares)")
+        print("Actual Compares = \(numCompares)")
+        print("Error in Compares = \(errCompares)%\n")
+        print("Expected Swaps = \(arr.count)")
+        print("Actual Swaps = \(numSwaps)")
+        print("Error in Swaps = \(errSwaps)%")
+    }
+    
+    return sort(array: arr, startingAt: startIndex, endingAt: endIndex, order: order)
 }
 
-let arr = [1,6,43,50,3,2,2,5,67,54,0,9,5]
-let sortedArr = Selection.sort(array: arr, endingAt: 3, order: .ascending)
 
+let arr = [0,4,5,3,5]
+let arr2 = [4,5,3,5]
+let sortedArr = selectionSort(array: arr, order: .ascending)
+let sortedArr2 = selectionSort(array: arr2, order: .ascending)
 arr.count
 sortedArr.count
 
